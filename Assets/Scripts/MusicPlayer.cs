@@ -19,7 +19,9 @@ public class MusicPlayer : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        StartCoroutine(WaitAndLoadNextScene());
+        if(SceneManager.GetActiveScene().buildIndex == 0) {
+            StartCoroutine(WaitAndLoadNextScene());
+        }
     }
 
     // Update is called once per frame

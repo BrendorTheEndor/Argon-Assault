@@ -24,21 +24,23 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] float controlYawFactor = -5f;
     [SerializeField] float controlRollFactor = -5f;
 
+    // A reference to the particle system/sound source for the player death explosion, which is nested under the player but inactive
+    [SerializeField] GameObject deathFX;
+
     // The current "throw" of the vertical and horizontal axes of input, from 0 to 1; used for calculation in multiple methods
     float horizontalThrow = 0f;
     float verticalThrow = 0f;
+    bool canMove = true;
 
-    // Start is called before the first frame update
-    void Start() {
 
-    }
-
-    // Update is called once per frame
     void Update() {
-        ProcessMovementInput();
-        ProcessRotation();
+        if(canMove) {
+            ProcessMovementInput();
+            ProcessRotation();
+        }
     }
 
+    // Processes the player's movement; clamps to screen size (set in inspector) and is framerate independent
     private void ProcessMovementInput() {
         horizontalThrow = Input.GetAxis("Horizontal");
         verticalThrow = Input.GetAxis("Vertical");
@@ -52,7 +54,7 @@ public class PlayerController : MonoBehaviour {
         float newXPos = Mathf.Clamp(rawNewXPos, -maxXRange, maxXRange);
         float newYPos = Mathf.Clamp(rawNewYPos, -maxYRange, maxYRange);
 
-        transform.localPosition = new Vector3(newXPos, newYPos, transform.localPosition.z); // localPosition is the position relative to the parent/ what's seen in inspector
+        transform.localPosition = new Vector3(newXPos, newYPos, transform.localPosition.z); // localPosition is the position relative to the parent/what's seen in inspector
     }
 
     // Automatically rotates the ship when flying around the screen so the nose is always (visually) facing forward, rather than the center of the screen
@@ -76,4 +78,8 @@ public class PlayerController : MonoBehaviour {
         transform.localRotation = Quaternion.Euler(pitch, yaw, roll);
     }
 
+    void OnPlayerDeath() { // Called by string reference, make sure to change in CollisionHandler if name changed
+        canMove = false;
+        deathFX.SetActive(true);
+    }
 }
