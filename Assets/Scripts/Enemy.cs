@@ -3,18 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour {
-    // Start is called before the first frame update
-    void Start() {
 
+    [SerializeField] Transform parent;
+    [SerializeField] GameObject deathFX;
+
+    void Start() {
+        AddNonTriggerBoxCollider();
     }
 
-    // Update is called once per frame
-    void Update() {
-
+    private void AddNonTriggerBoxCollider() {
+        BoxCollider enemyBoxCollider = gameObject.AddComponent<BoxCollider>();
+        enemyBoxCollider.isTrigger = false;
     }
 
     void OnParticleCollision(GameObject other) {
         Debug.Log("Particle collided with enemy ship: " + gameObject.name);
+        var instanceOfDeathFX = Instantiate(deathFX, transform.position, Quaternion.identity);
+        instanceOfDeathFX.transform.parent = parent;
         Destroy(gameObject);
     }
 }
